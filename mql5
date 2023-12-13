@@ -1,0 +1,146 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                                       Anchored VWAP with Alert |
+//|                                          Developed by Forex Robot Easy Team |
+//|                                                         www.forexroboteasy.com |
+//+------------------------------------------------------------------+
+
+#property strict
+
+//+------------------------------------------------------------------+
+//| Customizable Alert Levels                                          |
+//+------------------------------------------------------------------+
+input double AlertLevel1 = 1.2000;
+input double AlertLevel2 = 1.2500;
+input double AlertLevel3 = 1.3000;
+
+//+------------------------------------------------------------------+
+//| Customizable AVWAP Lines                                           |
+//+------------------------------------------------------------------+
+input double AVWAPLine1 = 1.2200;
+input double AVWAPLine2 = 1.2400;
+input double AVWAPLine3 = 1.2600;
+input double AVWAPLine4 = 1.2800;
+input double AVWAPLine5 = 1.3000;
+input double AVWAPLine6 = 1.3200;
+
+//+------------------------------------------------------------------+
+//| Customizable Alert Function                                        |
+//+------------------------------------------------------------------+
+void CheckAlert(double price)
+{
+   if (price >= AlertLevel1)
+   {
+      Alert('Price has reached Alert Level 1: ', price);
+   }
+   if (price >= AlertLevel2)
+   {
+      Alert('Price has reached Alert Level 2: ', price);
+   }
+   if (price >= AlertLevel3)
+   {
+      Alert('Price has reached Alert Level 3: ', price);
+   }
+}
+
+//+------------------------------------------------------------------+
+//| Customizable AVWAP Lines Function                                  |
+//+------------------------------------------------------------------+
+void DrawAVWAPLines()
+{
+   ObjectCreate(0, 'AVWAPLine1', OBJ_HLINE, 0, 0, AVWAPLine1);
+   ObjectCreate(0, 'AVWAPLine2', OBJ_HLINE, 0, 0, AVWAPLine2);
+   ObjectCreate(0, 'AVWAPLine3', OBJ_HLINE, 0, 0, AVWAPLine3);
+   ObjectCreate(0, 'AVWAPLine4', OBJ_HLINE, 0, 0, AVWAPLine4);
+   ObjectCreate(0, 'AVWAPLine5', OBJ_HLINE, 0, 0, AVWAPLine5);
+   ObjectCreate(0, 'AVWAPLine6', OBJ_HLINE, 0, 0, AVWAPLine6);
+}
+
+//+------------------------------------------------------------------+
+//| Customizable VWAP Calculation Algorithm                           |
+//+------------------------------------------------------------------+
+double CalculateVWAP()
+{
+   double vwap = 0.0;
+   double totalVolume = 0.0;
+   double totalPriceVolume = 0.0;
+   int bars = Bars(Symbol(), PERIOD_CURRENT);
+   
+   for (int i = bars - 1; i >= 0; i--)
+   {
+      double volume = Volume[i];
+      double price = Close[i];
+      totalPriceVolume += price * volume;
+      totalVolume += volume;
+   }
+   
+   if (totalVolume != 0)
+   {
+      vwap = totalPriceVolume / totalVolume;
+   }
+   
+   return vwap;
+}
+
+//+------------------------------------------------------------------+
+//| Customizable Alert Check Function                                  |
+//+------------------------------------------------------------------+
+void CheckVWAPAlert()
+{
+   double vwap = CalculateVWAP();
+   
+   CheckAlert(vwap);
+}
+
+//+------------------------------------------------------------------+
+//| Customizable Alert Function                                        |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+   CheckVWAPAlert();
+   DrawAVWAPLines();
+}
+
+//+------------------------------------------------------------------+
+//| Customizable User Interface                                        |
+//+------------------------------------------------------------------+
+void OnChartEvent(const int id, const long& lparam, const double& dparam, const string& sparam)
+{
+   if (id == CHARTEVENT_OBJECT_CLICK)
+   {
+      string objectName = ObjectName(lparam);
+      
+      if (objectName == 'AVWAPLine1')
+      {
+         Alert('AVWAP Line 1 clicked!');
+      }
+      else if (objectName == 'AVWAPLine2')
+      {
+         Alert('AVWAP Line 2 clicked!');
+      }
+      else if (objectName == 'AVWAPLine3')
+      {
+         Alert('AVWAP Line 3 clicked!');
+      }
+      else if (objectName == 'AVWAPLine4')
+      {
+         Alert('AVWAP Line 4 clicked!');
+      }
+      else if (objectName == 'AVWAPLine5')
+      {
+         Alert('AVWAP Line 5 clicked!');
+      }
+      else if (objectName == 'AVWAPLine6')
+      {
+         Alert('AVWAP Line 6 clicked!');
+      }
+   }
+}
+
+//+------------------------------------------------------------------+
+//| Customizable Code Delivery                                         |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+   ObjectsDeleteAll(0, OBJ_HLINE);
+}
